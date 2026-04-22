@@ -1,5 +1,7 @@
 import type { AppState } from '../App'
 import type { InputData, AnalysisResponse, OpportunityDetailResponse } from '../types'
+import InputCard from './InputCard'
+import GhostedScores from './GhostedScores'
 
 interface LandingPageProps {
   appState: AppState
@@ -17,6 +19,7 @@ interface LandingPageProps {
 
 export default function LandingPage({
   appState,
+  onSubmit,
   onRetry,
   onEditInput,
 }: LandingPageProps) {
@@ -32,12 +35,10 @@ export default function LandingPage({
       </div>
 
       <div className="w-full max-w-2xl relative">
-        {/* Center slot — components render here based on appState */}
-        {appState === 'input' && (
-          <div className="text-center text-muted-foreground text-sm py-8">
-            InputCard coming in step 6
-          </div>
-        )}
+        {appState === 'input' && <GhostedScores />}
+
+        {appState === 'input' && <InputCard onSubmit={onSubmit} />}
+
         {appState === 'loading' && (
           <div className="text-center text-muted-foreground text-sm py-8">
             LoadingAnimation coming in step 7
