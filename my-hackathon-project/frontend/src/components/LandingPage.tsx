@@ -2,6 +2,9 @@ import type { AppState } from '../App'
 import type { InputData, AnalysisResponse, OpportunityDetailResponse } from '../types'
 import InputCard from './InputCard'
 import GhostedScores from './GhostedScores'
+import LoadingAnimation from './LoadingAnimation'
+import PreCheckList from './PreCheckList'
+import ErrorState from './ErrorState'
 
 interface LandingPageProps {
   appState: AppState
@@ -19,6 +22,7 @@ interface LandingPageProps {
 
 export default function LandingPage({
   appState,
+  preCheckData,
   onSubmit,
   onRetry,
   onEditInput,
@@ -39,32 +43,16 @@ export default function LandingPage({
 
         {appState === 'input' && <InputCard onSubmit={onSubmit} />}
 
-        {appState === 'loading' && (
-          <div className="text-center text-muted-foreground text-sm py-8">
-            LoadingAnimation coming in step 7
-          </div>
-        )}
+        {appState === 'loading' && <LoadingAnimation />}
         {appState === 'pre-check' && (
-          <div className="text-center text-muted-foreground text-sm py-8">
-            PreCheckList coming in step 7
-          </div>
+          <PreCheckList checklist={preCheckData ?? undefined} onEdit={onEditInput} />
         )}
         {appState === 'results' && (
           <div className="text-center text-muted-foreground text-sm py-8">
             Results coming in step 8
           </div>
         )}
-        {appState === 'error' && (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground mb-4">
-              We couldn't complete your analysis this time. This might be a temporary issue — let's try again.
-            </p>
-            <div className="flex gap-3 justify-center">
-              <button onClick={onRetry} className="text-sm underline">Try again</button>
-              <button onClick={onEditInput} className="text-sm underline">Edit my input</button>
-            </div>
-          </div>
-        )}
+        {appState === 'error' && <ErrorState onRetry={onRetry} onEdit={onEditInput} />}
       </div>
     </div>
   )
