@@ -5,6 +5,7 @@ import GhostedScores from './GhostedScores'
 import LoadingAnimation from './LoadingAnimation'
 import PreCheckList from './PreCheckList'
 import ErrorState from './ErrorState'
+import ResultsView from './ResultsView'
 
 interface LandingPageProps {
   appState: AppState
@@ -22,10 +23,15 @@ interface LandingPageProps {
 
 export default function LandingPage({
   appState,
+  analysisResult,
   preCheckData,
+  modalOpen,
+  opportunityDetail,
   onSubmit,
   onRetry,
   onEditInput,
+  onModalOpen,
+  onModalClose,
 }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
@@ -47,10 +53,14 @@ export default function LandingPage({
         {appState === 'pre-check' && (
           <PreCheckList checklist={preCheckData ?? undefined} onEdit={onEditInput} />
         )}
-        {appState === 'results' && (
-          <div className="text-center text-muted-foreground text-sm py-8">
-            Results coming in step 8
-          </div>
+        {appState === 'results' && analysisResult && (
+          <ResultsView
+            result={analysisResult}
+            modalOpen={modalOpen}
+            opportunityDetail={opportunityDetail}
+            onModalOpen={onModalOpen}
+            onModalClose={onModalClose}
+          />
         )}
         {appState === 'error' && <ErrorState onRetry={onRetry} onEdit={onEditInput} />}
       </div>
