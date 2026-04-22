@@ -2,6 +2,8 @@ import type { AnalysisResponse, OpportunityDetailResponse } from '../types'
 import ReadinessScore from './ReadinessScore'
 import GapBreakdown from './GapBreakdown'
 import CoachingSection from './CoachingSection'
+import OpportunityCard from './OpportunityCard'
+import OpportunityModal from './OpportunityModal'
 
 interface ResultsViewProps {
   result: AnalysisResponse
@@ -11,7 +13,7 @@ interface ResultsViewProps {
   onModalClose: () => void
 }
 
-export default function ResultsView({ result, onModalOpen: _onModalOpen, onModalClose: _onModalClose, modalOpen: _modalOpen, opportunityDetail: _opportunityDetail }: ResultsViewProps) {
+export default function ResultsView({ result, onModalOpen, onModalClose, modalOpen, opportunityDetail }: ResultsViewProps) {
   return (
     <div className="w-full space-y-2 pb-12">
       <ReadinessScore score={result.score} interpretation={result.interpretation} />
@@ -20,10 +22,16 @@ export default function ResultsView({ result, onModalOpen: _onModalOpen, onModal
       <div className="border-t border-border" />
       <CoachingSection coaching={result.coaching} />
       <div className="border-t border-border" />
-      {/* OpportunityCard goes here in step 9 — placeholder for now */}
-      <div className="py-4 text-center text-sm text-muted-foreground">
-        OpportunityCard coming in step 9
-      </div>
+      <OpportunityCard
+        opportunity={result.opportunity}
+        onImprove={onModalOpen}
+      />
+      <OpportunityModal
+        open={modalOpen}
+        opportunityName={result.opportunity.name}
+        detail={opportunityDetail}
+        onClose={onModalClose}
+      />
     </div>
   )
 }
