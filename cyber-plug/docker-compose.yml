@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cyberplug
+      POSTGRES_PASSWORD: cyberplug
+      POSTGRES_DB: cyberplug
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cyberplug -d cyberplug"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # ── Required ──────────────────────────────────────────────────────────
+      # Generate with: python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+      API_KEY: ${API_KEY:?API_KEY is required — see README}
+
+      # ── Database (points to the db service above) ─────────────────────────
+      DATABASE_URL: postgresql://cyberplug:cyberplug@db:5432/cyberplug
+
+      # ── CORS (comma-separated list of allowed frontend origins) ───────────
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-[]}
+
+      # ── LLM enrichment (optional — set to "claude" or "openai" to enable) ─
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+
+      # ── Scan engine ───────────────────────────────────────────────────────
+      TRIVY_TIMEOUT: ${TRIVY_TIMEOUT:-300}
+      CLONE_BASE_DIR: /tmp/cyberplug
+
+      # ── App ───────────────────────────────────────────────────────────────
+      DEBUG: ${DEBUG:-false}
+
+volumes:
+  postgres_data:
